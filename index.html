@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - Full Stack App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .app-title {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            min-height: 500px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: #6a11cb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            font-size: 14px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item:hover {
+            background: #e9e9e9;
+        }
+
+        .nav-item.active {
+            background: #6a11cb;
+            color: white;
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .task-form {
+            display: flex;
+            margin-bottom: 25px;
+        }
+
+        .task-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+        }
+
+        .add-btn {
+            background: #6a11cb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .add-btn:hover {
+            background: #2575fc;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #6a11cb;
+            color: white;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .task-checkbox {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .task-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .task-actions button.edit-btn:hover {
+            color: #2575fc;
+        }
+
+        .task-actions button.delete-btn:hover {
+            color: #ff3860;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            width: 30%;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a11cb;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #f5f5f5;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+           
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+           
+            .task-form {
+                flex-direction: column;
+            }
+           
+            .task-input {
+                border-radius: 8px;
+                margin-bottom: 10px;
+            }
+           
+            .add-btn {
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="app-title">Task Manager</h1>
+            <p class="app-subtitle">A Full-Stack JavaScript Application</p>
+        </header>
+       
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="user-section">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <p>Welcome back,</p>
+                        <strong>John Doe</strong>
+                    </div>
+                </div>
+               
+                <div class="nav-item active">
+                    <i class="fas fa-tasks"></i>
+                    <span>My Tasks</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Calendar</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
+           
+            <div class="content">
+                <h2 class="section-title">My Tasks</h2>
+               
+                <div class="task-form">
+                    <input type="text" class="task-input" placeholder="Add a new task...">
+                    <button class="add-btn">Add Task</button>
+                </div>
+               
+                <div class="filter-options">
+                    <button class="filter-btn active">All</button>
+                    <button class="filter-btn">Active</button>
+                    <button class="filter-btn">Completed</button>
+                </div>
+               
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Create project proposal</span>
+                        <div class="task-actions">
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </li>
+                    <li class="task-item completed">
+                        <input type="checkbox" class="task-checkbox" checked>
+                        <span class="task-text">Review design mockups</span>
+                        <div class="task-actions">
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Develop backend API</span>
+                        <div class="task-actions">
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox">
+                        <span class="task-text">Implement user authentication</span>
+                        <div class="task-actions">
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </li>
+                </ul>
+               
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Total Tasks</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <footer>
+            <p>© 2023 Full-Stack Task Manager | Built with HTML, CSS, JavaScript & Node.js</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simulated database
+        const db = {
+            users: [
+                { id: 1, username: 'johndoe', password: 'password123', name: 'John Doe' }
+            ],
+            tasks: [
+                { id: 1, userId: 1, text: 'Create project proposal', completed: false },
+                { id: 2, userId: 1, text: 'Review design mockups', completed: true },
+                { id: 3, userId: 1, text: 'Develop backend API', completed: false },
+                { id: 4, userId: 1, text: 'Implement user authentication', completed: false }
+            ],
+            currentUser: null
+        };
+
+        // DOM Elements
+        const taskInput = document.querySelector('.task-input');
+        const addBtn = document.querySelector('.add-btn');
+        const taskList = document.querySelector('.task-list');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const totalTasks = document.querySelector('.stat-number:first-child');
+        const completedTasks = document.querySelectorAll('.stat-number')[1];
+        const pendingTasks = document.querySelectorAll('.stat-number')[2];
+
+        // Initialize the app
+        function init() {
+            // Simulate login
+            db.currentUser = db.users[0];
+           
+            // Load tasks
+            renderTasks();
+            updateStats();
+           
+            // Event listeners
+            addBtn.addEventListener('click', addTask);
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+           
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderTasks(btn.textContent.toLowerCase());
+                });
+            });
+        }
+
+        // Render tasks based on filter
+        function renderTasks(filter = 'all') {
+            const tasks = db.tasks.filter(task => {
+                if (filter === 'active') return !task.completed;
+                if (filter === 'completed') return task.completed;
+                return true;
+            });
+           
+            taskList.innerHTML = '';
+           
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = `task-item ${task.completed ? 'completed' : ''}`;
+                li.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
+                    <span class="task-text">${task.text}</span>
+                    <div class="task-actions">
+                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+               
+                // Add event listeners to the new elements
+                const checkbox = li.querySelector('.task-checkbox');
+                checkbox.addEventListener('change', () => toggleTask(task.id));
+               
+                const deleteBtn = li.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => deleteTask(task.id));
+               
+                const editBtn = li.querySelector('.edit-btn');
+                editBtn.addEventListener('click', () => editTask(task.id));
+               
+                taskList.appendChild(li);
+            });
+        }
+
+        // Add a new task
+        function addTask() {
+            const text = taskInput.value.trim();
+            if (text) {
+                const newTask = {
+                    id: Date.now(),
+                    userId: db.currentUser.id,
+                    text: text,
+                    completed: false
+                };
+               
+                // Simulate API call to backend
+                db.tasks.push(newTask);
+               
+                // Update UI
+                renderTasks();
+                updateStats();
+               
+                // Clear input
+                taskInput.value = '';
+            }
+        }
+
+        // Toggle task completion
+        function toggleTask(id) {
+            const task = db.tasks.find(task => task.id === id);
+            if (task) {
+                task.completed = !task.completed;
+               
+                // Update UI
+                renderTasks(document.querySelector('.filter-btn.active').textContent.toLowerCase());
+                updateStats();
+            }
+        }
+
+        // Delete a task
+        function deleteTask(id) {
+            // Simulate API call to backend
+            db.tasks = db.tasks.filter(task => task.id !== id);
+           
+            // Update UI
+            renderTasks(document.querySelector('.filter-btn.active').textContent.toLowerCase());
+            updateStats();
+        }
+
+        // Edit a task
+        function editTask(id) {
+            const task = db.tasks.find(task => task.id === id);
+            if (task) {
+                const newText = prompt('Edit your task:', task.text);
+                if (newText !== null && newText.trim() !== '') {
+                    // Simulate API call to backend
+                    task.text = newText.trim();
+                   
+                    // Update UI
+                    renderTasks(document.querySelector('.filter-btn.active').textContent.toLowerCase());
+                }
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = db.tasks.length;
+            const completed = db.tasks.filter(task => task.completed).length;
+            const pending = total - completed;
+           
+            totalTasks.textContent = total;
+            completedTasks.textContent = completed;
+            pendingTasks.textContent = pending;
+        }
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
